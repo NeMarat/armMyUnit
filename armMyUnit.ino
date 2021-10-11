@@ -32,8 +32,6 @@ void setup() {
     Serial.begin(115200);
     msp.begin(Serial);
     pinMode(PWM_PIN, INPUT);
-    pinMode(13, OUTPUT);
-    digitalWrite(13, LOW);
     pwm_value = 1000;
     prev_pwm_value = pwm_value;
     pwm_reads_count = 0;
@@ -41,6 +39,7 @@ void setup() {
 
 uint16_t read_pwm() {
   pwm_value = pulseIn(PWM_PIN, HIGH);
+  
   if (pwm_value+32 < prev_pwm_value) {
     pwm_reads_count++;
     if (pwm_reads_count > 10) {
@@ -59,10 +58,8 @@ uint16_t read_pwm() {
 void set_flight_mode_flags(){
   if(read_pwm() > 1650){
     flightModeFlags |= ARM_ACRO_BF;
-    digitalWrite(13, HIGH);
   } else {
     flightModeFlags &= ~ARM_ACRO_BF;
-    digitalWrite(13, LOW);
   }
 }
 
@@ -73,6 +70,7 @@ void send_msp_to_airunit() {
 }
 
 void loop() {
+  
   uint32_t currentMillis_MSP = millis();
   if ((uint32_t)(currentMillis_MSP - previousMillis_MSP) >= next_interval_MSP) {
     previousMillis_MSP = currentMillis_MSP;
